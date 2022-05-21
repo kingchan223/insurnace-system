@@ -1,10 +1,10 @@
 package util;
 
 import domain.Domain;
-import domain.employee.CmEmployee;
-import service.employee.CmEmployeeService;
+import domain.employee.Employee;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -12,17 +12,16 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
-public class fileCRUD {
+public class FileCRUD {
 
-    public List<Domain> findAll(String filename, Domain domain){
-        List<Domain> retVal = new ArrayList<>();
+    public static List<String> findAll(String filename){
+        List<String> retVal = new ArrayList<>();
         try {
             BufferedReader objStudentFile = new BufferedReader(new FileReader(getFilePath(filename)));
             while (objStudentFile.ready()) {
                 String strLine = objStudentFile.readLine();
                 if (!strLine.equals("")){
-                    Domain structure = domain.getStructure(strLine);
-                    retVal.add(structure);
+                    retVal.add(strLine);
                 }
             }
             objStudentFile.close();
@@ -33,31 +32,36 @@ public class fileCRUD {
         return retVal;
     }
 
-    public Domain findById(String id, String filename, Domain domain){
+    public static String findById(String id, String filename){
 
         try {
             BufferedReader objStudentFile = new BufferedReader(new FileReader(getFilePath(filename)));
             while (objStudentFile.ready()) {
                 String strLine = objStudentFile.readLine();
                 if (!strLine.equals("") && strLine.split(" ")[0].equals(id)){
-                    return domain.getStructure(strLine);
+                    return strLine;
                 }
             }
             objStudentFile.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return "";
     }
 
-    public void insertOne(String fileName, Domain domain) throws IOException {
-        Files.write(
-                Paths.get(getFilePath(fileName)),
-                domain.toFileString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND
-        );
+    public static String insertOne(String fileName, String data){
+        try{
+            Files.write(
+                    Paths.get(getFilePath(fileName)),
+                    data.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND
+            );
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        return data;
     }
 
-    public void deleteById(String id, String fileName, Domain domain) throws IOException {
+    public static void deleteById(String id, String fileName) throws IOException {
         String allOfFile = "";
         BufferedReader br = new BufferedReader(new FileReader(fileName));
         while (br.ready()) {
@@ -71,23 +75,23 @@ public class fileCRUD {
         br.close();
     }
 
-    public void updateDomain(String filename, Domain domain) throws IOException {
+    public static String updateOne(String id, String filename, String data) throws IOException{
         BufferedReader br = new BufferedReader(new FileReader(getFilePath(filename)));
         String allOfFile = "";
-        String id = domain.getId();
         while (br.ready()) {
             String line = br.readLine();
             String[] lineSplit = line.split(" ");
-            if(lineSplit[0].equals(id)) allOfFile += domain.toFileString()+ "/n";
+            if(lineSplit[0].equals(id)) allOfFile += data + "/n";
             else allOfFile += line + "/n";
         }
         FileWriter fw = new FileWriter(getFilePath(filename));
         fw.write(allOfFile);
         fw.close();
         br.close();
+        return data;
     }
 
-    private String getFilePath(String fileName) {
+    private static String getFilePath(String fileName) {
         if(fileName.equals("client-informaion"))
             return "/Users/leechanyoung/Downloads/명지/분산/insurance-system/src/files/client/client-informations.txt";
         else if(fileName.equals("contract-datas"))

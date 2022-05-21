@@ -1,6 +1,10 @@
 package service.employee;
 
-public abstract class CmEmployeeService {
-    ClientResp getClientInfo(String clientId);
-    ContractResp getContractInfo(String contractId);
+public class CmEmployeeService {
+    String getClientInfo(String clientId){
+        return null;
+    }
+    String getContractInfo(String contractId){
+        return null;
+    }
 }

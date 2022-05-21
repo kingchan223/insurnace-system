@@ -1,4 +1,5 @@
 package service.employee;
 
-public abstract class CiEmployeeService extends ClientInfoService{
+public class CiEmployeeService{
+
 }
